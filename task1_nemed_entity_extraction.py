@@ -82,13 +82,15 @@ def classify_text(text, entities):
         name = entity["name"].lower()
         description = entity["description"].lower()
 
-        # Основные сущности
-        if name in text.lower():
-            primary.add(entity_id)
+        # Основные сущности: точное совпадение имени в NER
+        for ent in doc.ents:
+            if ent.text.lower() == name:
+                primary.add(entity_id)
 
-        # Упоминания по описанию
-        if description in text.lower():
-            mentions.add(entity_id)
+        # Упоминания: совпадение с описанием через токены NER
+        for ent in doc.ents:
+            if ent.text.lower() in description:
+                mentions.add(entity_id)
     
     return {
         "primary": list(primary),
